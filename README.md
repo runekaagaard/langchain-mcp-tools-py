@@ -42,7 +42,7 @@ and is expressed as a `dict`, e.g.:
         }
     }
 
-    tools, mcp_cleanup = await convert_mcp_to_langchain_tools(
+    tools, cleanup = await convert_mcp_to_langchain_tools(
         mcp_configs
     )
 ```
@@ -81,3 +81,71 @@ An usage example can be found
 ## Limitations
 
 Currently, only text results of tool calls are supported.
+
+## Technical Details
+
+It was very tricky (for me) to get the parallel MCP server initialization
+to work successfully...
+
+I'm new to Python, so it is very possible that my ignorance is playing
+a big role here...  
+I'm summarizing why it was difficult for me below.  
+Any comments pointing out something I am missing would be greatly appreciated!
+[(comment here)](https://github.com/hideya/langchain-mcp-tools-ts/issues)
+
+1. Core Challenge:
+   - Async resources management for `stdio_client` and `ClientSession` seems
+     to rely exclusively on `asynccontextmanager` for cleanup with no manual
+     cleanup options (based on the mcp python-sdk impl as of Jan 14, 2025)
+   - Initializing multiple MCP servers in parallel requires a dedicated
+     `asyncio.Task` per server
+   - Necessity of keeping sessions alive for later use after initialization
+   - Ensuring proper cleanup later in the same task that created them
+
+2. Solution Strategy:
+   A key requirement for parallel initialization is that each server must be
+   initialized in its own dedicated task - there's no way around this if we
+   want true parallel initialization. However, this creates a challenge since
+   we also need to maintain long-lived sessions and handle cleanup properly.
+
+   The key insight is to keep the initialization tasks alive throughout the
+   session lifetime, rather than letting them complete after initialization.
+
+   By using `asyncio.Event`s for coordination, we can:
+   - Allow parallel initialization while maintaining proper context management
+   - Keep each initialization task running until explicit cleanup is requested
+   - Ensure cleanup occurs in the same task that created the resources
+   - Provide a clean interface for the caller to manage the lifecycle
+
+   Alternative Considered:
+   A generator/coroutine approach using `finally` block for cleanup was
+   considered but rejected because:
+   - It turned out that the `finally` block in a generator/coroutine can be
+     executed by a different task than the one that ran the main body of
+     the code
+   - This breaks the requirement that `AsyncExitStack.aclose()` must be
+     called from the same task that created the context
+
+3. Task Lifecycle:
+   To allow the initialization task to stay alive waiting for cleanup:
+   ```
+   [Task starts]
+     ↓
+   Initialize server & convert tools
+     ↓
+   Set ready_event (signals tools are ready)
+     ↓
+   await cleanup_event.wait() (keeps task alive)
+     ↓
+   When cleanup_event is set:
+   exit_stack.aclose() (cleanup in original task)
+   ```
+This approach indeed enables parallel initialization while maintaining proper
+async resource lifecycle management through context managers.
+However, I'm afraid I'm twisting things around too much.
+It usually means I'm doing something very worng...
+
+I think it is a natural assumption that MCP SDK is designed with consideration
+for parallel server initialization.
+I'm not sure what I'm missing...
+(FYI, with the TypeScript SDK, parallel server initialization was pretty straightforward)
