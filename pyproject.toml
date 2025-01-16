@@ -1,12 +1,11 @@
 [project]
 name = "langchain-mcp-tools"
-version = "0.0.4"
+version = "0.1.0"
 description = "Model Context Protocol (MCP) To LangChain Tools Conversion Utility"
 readme = "README.md"
 requires-python = ">=3.11"
 dependencies = [
     "jsonschema-pydantic>=0.6",
-    "langchain-core>=0.3.29",
     "langchain>=0.3.14",
     "langchain-anthropic>=0.3.1",
     "langchain-groq>=0.2.3",
@@ -18,19 +17,20 @@ dependencies = [
     "python-dotenv>=1.0.1",
 ]
 
-[dependency-groups]
+[project.optional-dependencies]
 dev = [
     "pytest>=8.3.4",
     "pytest-asyncio>=0.25.2",
-    "twine>=6.0.1",
 ]
 
+[tool.setuptools]
+package-dir = {"" = "src"}
+
 [tool.setuptools.packages.find]
-exclude = [
-    "tests*",
-    "docs*",
-    "examples*",
-]
+where = ["src"]
+
+[tool.setuptools.package-data]
+langchain_mcp_tools = ["py.typed"]
 
 [project.urls]
 "Bug Tracker" = "https://github.com/hideya/langchain-mcp-tools-py/issues"

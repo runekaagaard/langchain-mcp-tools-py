@@ -1,43 +1,45 @@
 # NOTES: 
 # - The command lines (recipe lines) must start with a TAB character.
-# - Each command line runs in a separate shell.
-.PHONY: clean install start start-v start-h build publish test clean
+# - Each command line runs in a separate shell without .ONESHELL:
+.PHONY: clean install build pkg-check publish test run-example
+.ONESHELL:
 
 .venv:
 	uv venv
 
 install: .venv
-	uv pip install .
+	uv pip install -e .
 
-# start:
-# 	uv run src/cli_chat.py
-
-# start-v:
-# 	uv run src/cli_chat.py -v
-
-# start-h:
-# 	uv run src/cli_chat.py -h
-
-build:
+build: clean install
 	uv build
 	@echo
 	uvx twine check dist/*
 
-publish:
-	uvx twine upload --verbose \
-	--repository-url https://upload.pypi.org/legacy/ dist/* \
-	--password ${PYPI_API_KEY}
+check-pkg:
+	uv pip show -f langchain-mcp-tools
 
-test:
-	uvx pytest tests/ -v
+publish: build
+	# set PYPI_API_KEY from .env
+	$(eval export $(shell grep '^PYPI_API_KEY=' .env ))
+
+	# check if PYPI_API_KEY is set
+	@if [ -z "$$PYPI_API_KEY" ]; then \
+		echo "Error: PYPI_API_KEY environment variable is not set"; \
+		exit 1; \
+	fi
+
+	uvx twine upload \
+		--repository-url https://upload.pypi.org/legacy/ dist/* \
+		--password ${PYPI_API_KEY}
+
+test: install
+	uv pip install -e ".[dev]"
+	.venv/bin/pytest tests/ -v
+
+run-example: install
+	uv run examples/example.py
 
 clean:
-	rm -rf \
-		.venv \
-		__pycache__ \
-		*/__pycache__ \
-		build/ dist/ \
-		*.egg-info \
-		.mypy_cache \
-		.pytest_cache \
-		src/*.egg-info
+	git clean -fdxn -e .env
+	@read -p 'OK?'
+	git clean -fdx -e .env
