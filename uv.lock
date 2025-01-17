@@ -561,7 +561,7 @@ wheels = [
 
 [[package]]
 name = "langchain-mcp-tools"
-version = "0.0.17"
+version = "0.1.0"
 source = { virtual = "." }
 dependencies = [
     { name = "jsonschema-pydantic" },
@@ -573,9 +573,13 @@ dependencies = [
     { name = "mcp" },
     { name = "pyjson5" },
     { name = "pympler" },
+    { name = "python-dotenv" },
+]
+
+[package.optional-dependencies]
+dev = [
     { name = "pytest" },
     { name = "pytest-asyncio" },
-    { name = "python-dotenv" },
 ]
 
 [package.metadata]
@@ -589,8 +593,8 @@ requires-dist = [
     { name = "mcp", specifier = ">=1.2.0" },
     { name = "pyjson5", specifier = ">=1.6.8" },
     { name = "pympler", specifier = ">=1.1" },
-    { name = "pytest", specifier = ">=8.3.4" },
-    { name = "pytest-asyncio", specifier = ">=0.25.2" },
+    { name = "pytest", marker = "extra == 'dev'", specifier = ">=8.3.4" },
+    { name = "pytest-asyncio", marker = "extra == 'dev'", specifier = ">=0.25.2" },
     { name = "python-dotenv", specifier = ">=1.0.1" },
 ]
 
