@@ -5,7 +5,7 @@ This package is intended to simplify the use of
 server tools with LangChain / Python.
 
 It contains a utility function `convert_mcp_to_langchain_tools()`.  
-This function handles parallel initialization of specified multiple MCP servers
+This async function handles parallel initialization of specified multiple MCP servers
 and converts their available tools into a list of LangChain-compatible tools.
 
 A typescript equivalent of this utility library is available
@@ -107,7 +107,8 @@ Any comments pointing out something I am missing would be greatly appreciated!
    - Initializing multiple MCP servers in parallel requires a dedicated
      `asyncio.Task` per server
    - Server cleanup can be initiated later by a task other than the one
-     that initialized the resources
+     that initialized the resources, whereas `AsyncExitStack.aclose()` must be
+     called from the same task that created the context
 
 2. Solution:
 
