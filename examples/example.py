@@ -72,8 +72,8 @@ async def run() -> None:
             tools
         )
 
-        query = 'Read the news headlines on bbc.com'
-        # query = 'Read and briefly summarize the LICENSE file'
+        # query = 'Read the news headlines on bbc.com'
+        query = 'Read and briefly summarize the LICENSE file'
 
         print('\x1b[33m')  # color to yellow
         print(query)
