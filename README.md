@@ -27,7 +27,7 @@ It contains a utility function `convert_mcp_to_langchain_tools()`.
 This async function handles parallel initialization of specified multiple MCP servers
 and converts their available tools into a list of LangChain-compatible tools.
 
-A typescript equivalent of this utility library is available
+A typescript equivalent of this utility is available
 [here](https://www.npmjs.com/package/@h1deya/langchain-mcp-tools)
 
 ## Requirements
