@@ -5,35 +5,32 @@ This package is intended to simplify the use of
 server tools with LangChain / Python.
 
 [Model Context Protocol (MCP)](https://modelcontextprotocol.io/),
-introduced by
-[Anthropic](https://www.anthropic.com/news/model-context-protocol),
-extends the capabilities of LLMs by enabling interaction with external tools and resources,
-such as web search and database access.
-Thanks to its open-source nature, MCP has gained significant traction in the developer community,
-with over 400 MCP servers already developed and shared:
+an open source technology
+[announced by Anthropic](https://www.anthropic.com/news/model-context-protocol),
+dramatically expands generative AI’s scope
+by enabling external tool and resource integration, including
+Google Drive, Slack, Notion, Spotify, Docker, PostgreSQL, and more…
+
+Over 450 functional components available as MCP servers:
 
 - [Glama’s list of Open-Source MCP servers](https://glama.ai/mcp/servers)
 - [Smithery: MCP Server Registry](https://smithery.ai/)
 - [awesome-mcp-servers](https://github.com/hideya/awesome-mcp-servers#Server-Implementations)
 - [MCP Get Started/Example Servers](https://modelcontextprotocol.io/examples)
 
-In the MCP framework, external features are encapsulated in an MCP server,
-which typically runs in a separate process and communicates
-via `stdio` using the open standard protocol.
-This clean decoupling makes it easy to adopt and reuse any of
-the significant collections of MCP servers listed above.
-
-To make it easy for LangChain users to take advantage of such a vast resource base,
-this package offers quick and seamless access from LangChain to MCP servers.
+The goal of this utility is to make these 450+ MCP servers readily accessible from LangChain.
 
 It contains a utility function `convert_mcp_to_langchain_tools()`.  
 This async function handles parallel initialization of specified multiple MCP servers
 and converts their available tools into a list of LangChain-compatible tools.
 
+For detailed information on how to use this library, please refer to the following document:
+- ["Supercharging LangChain: Integrating 450+ MCP with ReAct"](https://medium.com/@h1deya/supercharging-langchain-integrating-450-mcp-with-react-d4e467cbf41a)
+
 A typescript equivalent of this utility is available
 [here](https://www.npmjs.com/package/@h1deya/langchain-mcp-tools)
 
-## Requirements
+## Prerequisites
 
 - Python 3.11+
 
@@ -91,12 +88,15 @@ agent = create_react_agent(
     tools
 )
 ```
-A simple and experimentable usage example can be found
+
+Find complete, minimal working usage examples
 [here](https://github.com/hideya/langchain-mcp-tools-py-usage/blob/main/src/example.py)
 
-A more realistic usage example can be found
-[here](https://github.com/hideya/mcp-client-langchain-py)
+For hands-on experimentation with MCP server integration,
+try [this LangChain application built with the utility](https://github.com/hideya/mcp-client-langchain-py)
 
+For detailed information on how to use this library, please refer to the following document:  
+["Supercharging LangChain: Integrating 450+ MCP with ReAct"](https://medium.com/@h1deya/supercharging-langchain-integrating-450-mcp-with-react-d4e467cbf41a)
 
 ## Limitations
 
